@@ -46,7 +46,8 @@ class CourseController extends Controller
             'description' => 'required|string',
             'price' => 'required|integer',
             'image' => 'nullable|image',
-            'teacher_id' => 'required|exists:users,id',
+            'max_students' => 'required|integer',
+            'teacher_id' => 'nullable|exists:users,id',
         ]);
 
         $course = new Course($validated);
@@ -69,16 +70,18 @@ class CourseController extends Controller
     {
         $course = Course::findOrFail($course_id);
 
-        if ($course->teacher_id !== $request->user()->id) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        // if ($course->teacher_id !== $request->user()->id) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'url' => 'required|string',
+            'url' => 'required|url',
             'description' => 'required|string',
             'price' => 'required|integer',
             'image' => 'nullable|image',
+            'max_students' => 'required|integer',
+            'teacher_id' => 'nullable|exist:users,id'
         ]);
 
         $course->fill($validated);
@@ -91,7 +94,7 @@ class CourseController extends Controller
 
         return response()->json([
             'code' => 201,
-            'message' => 'Laporan Berhasil Diupdate',
+            'message' => 'Course Berhasil Diupdate',
             'data' => $course,
         ], 201);
     }
