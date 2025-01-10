@@ -1,80 +1,90 @@
 # UAS Pemrograman Sisi Server
-## Project LMS API Laravel w/ Docker
 
-## Fitur
-- Register, Login, & Logout - Point 1
-- Course Analytic - Point 1
-- Limitation Maximum Student Enroll - Point 1
-- Announcement - Point 4
-- Feedback - Point 4
-- Category - Point 4
+## API LMS Laravel dengan Docker
 
-## Technology Stack
-- Laravel - Framework PHP
-- MySQL - Relational Database Management System
-- Nginx - Web server
-- Docker - Container platform
+### Fitur yang Tersedia
+- **Pendaftaran, Login, & Logout** - Fungsi Dasar
+- **Analitik Kursus** - Fungsi Dasar
+- **Pembatasan Jumlah Maksimum Mahasiswa** - Fungsi Dasar
+- **Pengumuman** - Fungsi Tambahan
+- **Umpan Balik** - Fungsi Tambahan
+- **Kategori** - Fungsi Tambahan
 
-## Prerequisite
-Pada sistem operasi user telah terinstal `Docker Desktop` atau package `docker` & `docker-compose`
+### Teknologi yang Digunakan
+- **Laravel** - Framework PHP
+- **MySQL** - Sistem Manajemen Basis Data Relasional
+- **Nginx** - Server Web
+- **Docker** - Platform Container
 
-## Guide / Step-by-step
-### 1. Clone Project
-```shell
-git clone https://github.com/FadhilFirmansyah/lms-api.git
+### Persyaratan
+Sebelum memulai, pastikan sistem Anda telah terpasang salah satu dari berikut ini:
+- **Docker Desktop** atau
+- Paket **docker** dan **docker-compose**
+
+### Panduan Instalasi
+
+#### 1. Clone Proyek
+```bash
+git clone https://github.com/gent0nk/uas-pss.git
 ```
-Clonning project ke directory yang sedang anda akses saat ini
-### 2. Change Directory
-```shell
-cd lms-api
+Salin repositori ke direktori kerja Anda.
+
+#### 2. Masuk ke Direktori Proyek
+```bash
+cd uas-pss
 ```
-Berpindah menuju directory / folder hasil dari project yang telah di clone
-### 3. Install Project
-#### 3.1. Linux & MacOS (UNIX)
-```shell
+Akses folder hasil clone.
+
+#### 3. Jalankan Instalasi
+
+##### Untuk Sistem UNIX (Linux & MacOS)
+```bash
 ./setup.sh
 ```
-Melakukan setup installasi dari awal hingga akhir, scripting yang membantu dengan menghindari serimonial setup ;)
-#### 3.2. Windows 
-Sayangnya scripting `setup.sh` tidak bisa berjalan kecuali user menggunakan wsl dengan mounting yang sesuai maka bisa apabila menggunakan cara reguler pada Windows sayangnya tidak bisa, user harus melakukan kegiatan seremonial setup :(
-##### 3.2.1. Compose Up
-```shell
+Jalankan skrip otomatis untuk menyiapkan proyek.
+
+##### Untuk Sistem Windows
+Karena skrip `setup.sh` tidak kompatibel di Windows, lakukan instalasi manual dengan langkah-langkah berikut:
+
+###### 3.1. Inisialisasi Container
+```bash
 docker-compose up -d --build
 ```
-Bertujuan untuk inisialisasi awal seperti pembuatan `Dockerfile` dan `docker-compose.yml` menjadi suatu container
-##### 3.2.2. Change Modifier
-```shell
+
+###### 3.2. Atur Izin Direktori
+```bash
 docker-compose exec app chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 ```
-Direcotry `/storage` dan `/bootstrap/cache` akan memiliki semua akses (Write, Read, Execute)
-##### 3.2.3. NPM Install
-```shell
+
+###### 3.3. Instal Dependency Frontend
+```bash
 docker exec laravel_app npm i
 ```
-Menginstall segala dependency untuk frontend yang bersumber dari `package.json`
-##### 3.2.4. NPM Build
-```shell
+
+###### 3.4. Build Frontend
+```bash
 docker exec laravel_app npm run build
 ```
-Perintah yang menjalankan skrip `build` yang terdefinisi di file `package.json` dalam container `laravel_app`
-##### 3.2.5. Composer Scope Install
-```shell
+
+###### 3.5. Instal Dependency PHP
+```bash
 docker exec laravel_app composer install
 ```
-Menginstal dependensi PHP yang terdaftar di file `composer.json` dalam container `laravel_app`
-##### 3.2.6. Duplicate .ENV File
-```shell
+
+###### 3.6. Salin File Konfigurasi `.env`
+```bash
 docker exec laravel_app cp .env.example .env
 ```
-Menyalin file `.env.example` menjadi file `.env` di dalam container `laravel_app`, yang digunakan untuk konfigurasi aplikasi
-##### 3.2.7. Activate .ENV File
-```shell
+
+###### 3.7. Generate Kunci Aplikasi
+```bash
 docker exec laravel_app php artisan key:generate
 ```
-Menghasilkan dan mengatur kunci aplikasi baru untuk Laravel di dalam container `laravel_app`, yang digunakan untuk keamanan aplikasi
-##### 3.2.8. Formatting .ENV File
-Ubah file `.env` yang terletak di `/lms-api`
-```.env
+
+###### 3.8. Konfigurasi Database
+Edit file `.env` pada proyek ini:
+Sebelum:
+```plaintext
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -82,8 +92,8 @@ DB_DATABASE=database
 DB_USERNAME=root
 DB_PASSWORD=
 ```
-Menjadi
-```.env
+Sesudah:
+```plaintext
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
@@ -91,15 +101,15 @@ DB_DATABASE=lms_api
 DB_USERNAME=root
 DB_PASSWORD=root
 ```
-##### 3.2.9. Database
-```shell
+
+###### 3.9. Migrasi Basis Data
+```bash
 docker exec laravel_app php artisan migrate
 ```
-Migrasi database untuk memperbarui struktur tabel di dalam container `laravel_app`
 
-## Arsitektur Aplikasi
-- **docker-compose.yml** - Konfigurasi yang digunakan oleh Docker Compose untuk mendefinisikan dan menjalankan multi-container Docker aplikasi, termasuk pengaturan layanan, jaringan, volume, dan penghubung antar container
-- **Dockerfile** - File teks yang berisi serangkaian instruksi untuk membangun image Docker, termasuk pengaturan sistem, instalasi aplikasi, dan konfigurasi yang diperlukan
-- **lms-api** - Source code project endpoint API LMS 
-- **nginx.conf** - File konfigurasi utama Nginx yang mengatur pengaturan server, rute trafik, dan interaksi dengan aplikasi 
-- **setup.sh** - Script installasi setup untuk membuat container, frontend, backend, dan database
+### Struktur Proyek
+- **docker-compose.yml** - Definisi konfigurasi multi-container Docker
+- **Dockerfile** - Instruksi pembuatan image Docker
+- **uas-pss** - Kode sumber API LMS
+- **nginx.conf** - File konfigurasi Nginx
+- **setup.sh** - Skrip otomatis untuk instalasi
